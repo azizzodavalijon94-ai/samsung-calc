@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Calculator</title>
+    <style>
+        /* Дизайни заводии Самсунг (One UI) */
+        body { background-color: #000000; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white; -webkit-user-select: none; user-select: none; }
+        .calc-container { width: 100%; max-width: 360px; padding: 20px; box-sizing: border-box; background-color: #000000; }
+        #screen { width: 100%; height: 120px; background-color: transparent; border: none; color: #ffffff; font-size: 48px; text-align: right; padding: 10px; box-sizing: border-box; margin-bottom: 10px; pointer-events: none; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        
+        /* Тугмаҳои мудаввари Самсунг */
+        button { height: 72px; width: 72px; font-size: 28px; border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; justify-self: center; transition: background-color 0.1s; }
+        button:active { filter: brightness(1.3); }
+        
+        /* Рангҳои Самсунг */
+        button.number { background-color: #1c1c1e; color: #ffffff; } /* Рақамҳо */
+        button.operator { background-color: #ff9f0a; color: #ffffff; } /* Амалҳо (+,-,=) */
+        button.top-func { background-color: #a5a5a5; color: #000000; font-size: 24px; } /* Тозакунӣ (C) */
+        button.zero { grid-column: span 2; width: 158px; border-radius: 40px; justify-content: flex-start; padding-left: 28px; }
+        
+        /* Тирезаи Сейфи Махфӣ */
+        #safe, #setup-code { display: none; text-align: center; background-color: #1c1c1e; padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; border: 1px solid #2c2c2e; }
+        h2 { color: #ff9f0a; margin-top: 0; font-size: 22px; }
+        input.box { width: 80%; padding: 12px; font-size: 18px; border-radius: 10px; border: 1px solid #3a3a3c; background: #000; color: white; text-align: center; margin-bottom: 15px; }
+        .btn-action { background: #ff9f0a; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 10px; cursor: pointer; width: 85%; }
+    </style>
+</head>
+<body>
+
+    <div id="setup-code">
+        <h2>🔒 Коди Махфӣ Созед</h2>
+        <p style="color:#a5a5a5; font-size:14px;">Рамзи 4-рақамаи худро барои сейф ворид кунед:</p>
+        <input type="number" id="new-pin" class="box" placeholder="Масалан: 1987" max="9999">
+        <button class="btn-action" onclick="saveNewCode()">Сабт КАРДАН</button>
+    </div>
+
+    <div class="calc-container" id="calc-box">
+        <input type="text" id="screen" value="" readonly>
+        <div class="grid">
+            <button class="top-func" onclick="clearScreen()">C</button>
+            <button class="top-func" onclick="press('/')">/</button>
+            <button class="top-func" onclick="press('*')">×</button>
+            <button class="operator" onclick="press('-')">−</button>
+            
+            <button class="number" onclick="press('7')">7</button>
+            <button class="number" onclick="press('8')">8</button>
+            <button class="number" onclick="press('9')">9</button>
+            <button class="operator" onclick="press('+')">+</button>
+            
+            <button class="number" onclick="press('4')">4</button>
+            <button class="number" onclick="press('5')">5</button>
+            <button class="number" onclick="press('6')">6</button>
+            <button class="operator" onclick="calculate()">=</button>
+            
+            <button class="number" onclick="press('1')">1</button>
+            <button class="number" onclick="press('2')">2</button>
+            <button class="number" onclick="press('3')">3</button>
+            
+            <button class="number zero" onclick="press('0')">0</button>
+            <button class="number" onclick="press('.')">,</button>
+        </div>
+    </div>
+
+    <div id="safe">
+        <h2 style="color: #30d158;">🔓 СЕЙФИ МАХФӢ КУШОДА ШУД</h2>
+        <p><b>Хуш омадед, Бародарҷон!</b></p>
+        <p style="color:#a5a5a5; font-size:14px;">Ин ҷо хотираи махфии туст. Ҳамааш соатӣ кор кард!</p>
+        <button class="btn-action" style="background:#3a3a32;" onclick="closeSafe()">Баргаштан</button>
+    </div>
+
+    <script>
+        let screen = document.getElementById('screen');
+        
+        // Санҷиш: Оё дар хотираи телефон рамз ҳаст?
+        window.onload = function() {
+            let savedPIN = localStorage.getItem('user_secret_pin');
+            if (!savedPIN) {
+                // Агар рамз набошад, калкуляторро пинҳон кун ва тирезаи сохтани кодро нишон деҳ
+                document.getElementById('calc-box').style.display = 'none';
+                document.getElementById('setup-code').style.display = 'block';
+            }
+        }
+
+        function saveNewCode() {
+            let pinInput = document.getElementById('new-pin').value;
+            if (pinInput.length >= 4) {
+                localStorage.setItem('user_secret_pin', pinInput); // Сабт дар хотираи телефон
+                alert("Коди махфии ту соатӣ сабт шуд!");
+                document.getElementById('setup-code').style.display = 'none';
+                document.getElementById('calc-box').style.display = 'block';
+            } else {
+                alert("Лутфан рамзи камаш 4-рақама нависед!");
+            }
+        }
+        
+        function press(num) { screen.value += num; }
+        function clearScreen() { screen.value = ''; }
+        
+        function calculate() {
+            let savedPIN = localStorage.getItem('user_secret_pin');
+            
+            // Агар коде, ки одам дар калкулятор зад, баробари коди сабтшудааш бошад:
+            if (screen.value === savedPIN) {
+                screen.value = '';
+                document.getElementById('calc-box').style.display = 'none';
+                document.getElementById('safe').style.display = 'block';
+            } else {
+                try {
+                    // Агар коди оддии математикӣ бошад, ҳисоб кун
+                    let result = eval(screen.value.replace('×', '*').replace('−', '-'));
+                    screen.value = result;
+                } catch(e) {
+                    screen.value = 'Хатогӣ';
+                }
+            }
+        }
+        
+        function closeSafe() {
+            document.getElementById('safe').style.display = 'none';
+            document.getElementById('calc-box').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
