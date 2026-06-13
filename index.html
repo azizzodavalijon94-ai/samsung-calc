@@ -3,306 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
+    <title>Ёддоштҳои Мукаммал</title>
     <style>
+        /* 1. НАСТРОЙКАИ ЭКРАН ВА ФОН (Стили сиёҳи касбӣ) */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         body {
             background-color: #000000;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: #ffffff;
+            padding: 20px;
         }
-        .calc-container {
+        .app-container {
             width: 100%;
             max-width: 400px;
-            height: 100vh;
-            background-color: #000000;
+            height: 90vh;
+            background: #1c1c1e; /* Ранги хокистарии торики iOS */
+            border-radius: 30px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
-            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .screen {
-            width: 100%;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-end;
-            padding: 10px;
-            word-break: break-all;
+
+        /* 2. ШАВҚАТИ БОЛОИ БАРНОМА (Шапка) */
+        .header {
+            margin-bottom: 20px;
         }
-        .history {
-            font-size: 24px;
-            color: #7d7d7d;
-            margin-bottom: 5px;
-            min-height: 30px;
-        }
-        .display {
-            font-size: 48px;
-            color: #ffffff;
-            font-weight: 300;
-        }
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-        button {
-            border: none;
-            border-radius: 50%;
-            aspect-ratio: 1;
+        .header h1 {
             font-size: 28px;
-            font-weight: 400;
+            font-weight: 700;
+            color: #0a84ff; /* Ранги кабуди дурахшони Apple */
+        }
+        .header p {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-top: 5px;
+        }
+
+        /* 3. КУТТИИ НАВИШТАН ВА ТУГМАИ ИЛОВА (Input) */
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .task-input {
+            flex-grow: 1;
+            background: #2c2c2e;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+        }
+        .task-input::placeholder {
+            color: #aeaeb2;
+        }
+        .add-btn {
+            background: #0a84ff;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
-            transition: filter 0.1s;
+            transition: background 0.2s;
         }
-        button:active {
-            filter: brightness(1.3);
+        .add-btn:active {
+            background: #0056b3;
         }
-        .btn-gray { background-color: #a5a5a5; color: #000000; }
-        .btn-orange { background-color: #ff9f0a; color: #ffffff; font-weight: 500; }
-        .btn-dark { background-color: #333333; color: #ffffff; }
-        .btn-zero {
-            grid-column: span 2;
-            border-radius: 40px;
-            aspect-ratio: auto;
-            height: 100%;
-            padding-left: 30px;
-            text-align: left;
-        }
-        /* СЕЙФИ НАВ БО ИНДЕКСИ БЕХАТО */
-        .safe-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #121212;
-            padding: 20px;
+
+        /* 4. РӮЙХАТИ КОРҲО (Дизайни элементҳо) */
+        .task-list {
+            list-style: none;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
             flex-direction: column;
-            z-index: 1000;
+            gap: 12px;
         }
-        .safe-header {
+        .task-item {
+            background: rgba(255, 255, 255, 0.05); /* Стили шишагӣ */
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #222;
-            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: fadeIn 0.3s ease;
         }
-        .safe-title {
-            color: #4cd964;
-            font-size: 20px;
-            font-weight: bold;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .btn-back {
-            background-color: #ff3b30;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-        }
-        .upload-btn-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        .btn-upload {
-            border: 2px dashed #4cd964;
-            color: #4cd964;
-            background-color: transparent;
-            padding: 15px;
-            border-radius: 10px;
+        .task-text {
             font-size: 16px;
-            font-weight: bold;
-            width: 100%;
-            text-align: center;
-            cursor: pointer;
+            color: #ffffff;
+            max-width: 70%;
+            word-break: break-all;
         }
-        .upload-btn-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            overflow-y: auto;
-            flex-grow: 1;
-            padding-bottom: 20px;
-        }
-        .gallery-item {
-            position: relative;
-            aspect-ratio: 1;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #222;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255,59,48,0.9);
+        .delete-task-btn {
+            background: #ff453a; /* Ранги сурхи хавфноки iOS */
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            border-radius: 8px;
+            padding: 8px 12px;
             font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            z-index: 10;
+            transition: background 0.2s;
+        }
+        .delete-task-btn:active {
+            background: #cc3b33;
         }
     </style>
 </head>
 <body>
 
-    <div class="calc-container" id="calculator">
-        <div class="screen">
-            <div class="history" id="history"></div>
-            <div class="display" id="display">0</div>
+    <div class="app-container">
+        <!-- ТАРАФИ БОЛО -->
+        <div class="header">
+            <h1>📝 Рӯйхати Корҳо</h1>
+            <p>Барои имрӯз чӣ нақша доред, Бародар?</p>
         </div>
-        <div class="buttons">
-            <button class="btn-gray" onclick="clearScreen()">AC</button>
-            <button class="btn-gray" onclick="appendValue('%')">%</button>
-            <button class="btn-gray" onclick="deleteLast()">⌫</button>
-            <button class="btn-orange" onclick="appendValue('/')">÷</button>
 
-            <button class="btn-dark" onclick="appendValue('7')">7</button>
-            <button class="btn-dark" onclick="appendValue('7')">8</button>
-            <button class="btn-dark" onclick="appendValue('9')">9</button>
-            <button class="btn-orange" onclick="appendValue('*')">×</button>
-
-            <button class="btn-dark" onclick="appendValue('4')">4</button>
-            <button class="btn-dark" onclick="appendValue('5')">5</button>
-            <button class="btn-dark" onclick="appendValue('6')">6</button>
-            <button class="btn-orange" onclick="appendValue('-')">-</button>
-
-            <button class="btn-dark" onclick="appendValue('1')">1</button>
-            <button class="btn-dark" onclick="appendValue('2')">2</button>
-            <button class="btn-dark" onclick="appendValue('3')">3</button>
-            <button class="btn-orange" onclick="appendValue('+')">+</button>
-
-            <button class="btn-dark btn-zero" onclick="appendValue('0')">0</button>
-            <button class="btn-dark" onclick="appendValue('.')">,</button>
-            <button class="btn-orange" onclick="calculate()">=</button>
+        <!-- СЕКЦИЯИ ИЛОВА КАРДАН -->
+        <div class="input-section">
+            <input type="text" id="taskInput" class="task-input" placeholder="Кори навро нависед...">
+            <button class="add-btn" onclick="addTask()">➕</button>
         </div>
+
+        <!-- РӮЙХАТИ АСОСӢ -->
+        <ul id="taskList" class="task-list">
+            <!-- Корҳо бо коди JavaScript дар ин ҷо пайдо мешаванд -->
+        </ul>
     </div>
 
-    <div class="safe-container" id="safe">
-        <div class="safe-header">
-            <div class="safe-title">🔒 СЕЙФИ МАХФӢ</div>
-            <button class="btn-back" onclick="closeSafe()">Бурдан</button>
-        </div>
-        
-        <div class="upload-btn-wrapper">
-            <button class="btn-upload">➕ ИЛОВА КАРДАНИ СУРАТ</button>
-            <input type="file" id="imageInput" accept="image/*" multiple onchange="saveImages()" />
-        </div>
-
-        <div class="gallery" id="gallery"></div>
-    </div>
-
+    <!-- ⚡ АКНУН МАЙНАИ БАРНОМА (JAVASCRIPT) ⚡ -->
     <script>
-        let display = document.getElementById('display');
-        let history = document.getElementById('history');
-        let currentInput = '0';
-        const SECRET_CODE = '1987'; 
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
 
-        function updateDisplay() {
-            display.innerText = currentInput;
-        }
+        // 1. БОР КАРДАНИ КОРҲОИ САБТШУДА АЗ ХОТИРАИ ТЕЛЕФОН
+        document.addEventListener('DOMContentLoaded', loadTasks);
 
-        function appendValue(val) {
-            if (currentInput === '0' && !isNaN(val)) {
-                currentInput = val;
-            } else {
-                currentInput += val;
-            }
-            updateDisplay();
-        }
-
-        function clearScreen() {
-            currentInput = '0';
-            history.innerText = '';
-            updateDisplay();
-        }
-
-        function deleteLast() {
-            if (currentInput.length > 1) {
-                currentInput = currentInput.slice(0, -1);
-            } else {
-                currentInput = '0';
-            }
-            updateDisplay();
-        }
-
-        function calculate() {
-            if (currentInput === SECRET_CODE) {
-                openSafe();
-                clearScreen();
+        // 2. ФУНКСИЯИ ИЛОВА КАРДАНИ КОР
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            
+            if (taskText === '') {
+                alert('Бародарҷон, аввал ягон чиз нависед! 😊');
                 return;
             }
-            try {
-                history.innerText = currentInput;
-                let result = eval(currentInput.replace('×', '*').replace('÷', '/'));
-                currentInput = String(result);
-                updateDisplay();
-            } catch {
-                currentInput = 'Хато';
-                updateDisplay();
+
+            createTaskElement(taskText);
+            saveTaskToLocal(taskText);
+            
+            taskInput.value = ''; // Тоза кардани куттии навишт пас аз илова
+        }
+
+        // 3. СОХТАНИ ЭЛЕМЕНТИ ВИЗУАЛӢ ДАР ЭКРАН
+        function createTaskElement(text) {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+
+            li.innerHTML = `
+                <span class="task-text">${text}</span>
+                <button class="delete-task-btn" onclick="deleteTask(this, '${text}')">✕ Нест кардан</button>
+            `;
+
+            taskList.appendChild(li);
+        }
+
+        // 4. ФУНКСИЯИ НЕСТ КАРДАН
+        function deleteTask(buttonElement, text) {
+            // Нест кардан аз экран
+            const item = buttonElement.parentElement;
+            item.remove();
+
+            // Нест кардан аз хотира
+            removeTaskFromLocal(text);
+        }
+
+        // 5. САБТ ДАР ХОТИРАИ ЛОКАЛӢ (localStorage)
+        function saveTaskToLocal(task) {
+            let tasks = localStorage.getItem('my_tasks') ? JSON.parse(localStorage.getItem('my_tasks')) : [];
+            tasks.push(task);
+            localStorage.setItem('my_tasks', JSON.stringify(tasks));
+        }
+
+        // 6. ХОНДАН АЗ ХОТИРА ҲАНГОМИ КУШОДАНИ БАРНОМА
+        function loadTasks() {
+            let tasks = localStorage.getItem('my_tasks') ? JSON.parse(localStorage.getItem('my_tasks')) : [];
+            tasks.forEach(function(task) {
+                createTaskElement(task);
+            });
+        }
+
+        // 7. ТОЗА КАРДАНИ ЯК КОР АЗ ХОТИРА
+        function removeTaskFromLocal(taskToDelete) {
+            let tasks = localStorage.getItem('my_tasks') ? JSON.parse(localStorage.getItem('my_tasks')) : [];
+            tasks = tasks.filter(task => task !== taskToDelete);
+            localStorage.setItem('my_tasks', JSON.stringify(tasks));
+        }
+
+        // АГАР ТУГМАИ ENTER-РО ДАР КЛАВИАТУРА ПАХШ КУНАД ҲАМ ИЛОВА КУНАД
+        taskInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
             }
-        }
+        });
+    </script>
 
-        // БАЗАИ БЕХАТОР БАРОИ СУРАТҲО
-        let db;
-        const request = indexedDB.open("SamsungSecretSafe", 1);
-
-        request.onupgradeneeded = function(e) {
-            db = e.target.result;
-            if (!db.objectStoreNames.contains("secret_gallery")) {
-                db.createObjectStore("secret_gallery", { autoIncrement: true });
-            }
-        };
-
-        request.onsuccess = function(e) {
-            db = e.target.result;
-        };
-
-        function openSafe() {
-            document.getElementById('calculator').style.display = 'none';
-            document.getElementById('safe').style.display = 'flex';
-            loadImages();
-        }
-
-        function closeSafe() {
-            document.getElementById('safe').style.display = 'none';
-            document.getElementById('calculator').style.display = 'flex';
-        }
-
-        // ИЛОВА КАРД
+</body>
+</html>
