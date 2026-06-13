@@ -80,7 +80,7 @@
             padding-left: 30px;
             text-align: left;
         }
-        /* Сейфи Махфӣ */
+        /* СЕЙФИ НАВ БО ИНДЕКСИ БЕХАТО */
         .safe-container {
             display: none;
             position: fixed;
@@ -112,6 +112,8 @@
             padding: 8px 15px;
             border-radius: 8px;
             font-size: 14px;
+            border: none;
+            cursor: pointer;
         }
         .upload-btn-wrapper {
             position: relative;
@@ -129,7 +131,7 @@
             font-weight: bold;
             width: 100%;
             text-align: center;
-            aspect-ratio: auto;
+            cursor: pointer;
         }
         .upload-btn-wrapper input[type=file] {
             font-size: 100px;
@@ -137,6 +139,7 @@
             left: 0;
             top: 0;
             opacity: 0;
+            cursor: pointer;
         }
         .gallery {
             display: grid;
@@ -162,23 +165,23 @@
             position: absolute;
             top: 5px;
             right: 5px;
-            background: rgba(255,59,48,0.8);
+            background: rgba(255,59,48,0.9);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-    <!-- КАЛКУЛЯТОР -->
     <div class="calc-container" id="calculator">
         <div class="screen">
             <div class="history" id="history"></div>
@@ -191,7 +194,7 @@
             <button class="btn-orange" onclick="appendValue('/')">÷</button>
 
             <button class="btn-dark" onclick="appendValue('7')">7</button>
-            <button class="btn-dark" onclick="appendValue('8')">8</button>
+            <button class="btn-dark" onclick="appendValue('7')">8</button>
             <button class="btn-dark" onclick="appendValue('9')">9</button>
             <button class="btn-orange" onclick="appendValue('*')">×</button>
 
@@ -211,7 +214,6 @@
         </div>
     </div>
 
-    <!-- СЕЙФИ МАХФӢ -->
     <div class="safe-container" id="safe">
         <div class="safe-header">
             <div class="safe-title">🔒 СЕЙФИ МАХФӢ</div>
@@ -230,7 +232,7 @@
         let display = document.getElementById('display');
         let history = document.getElementById('history');
         let currentInput = '0';
-        const SECRET_CODE = '1987'; // Коди махфӣ
+        const SECRET_CODE = '1987'; 
 
         function updateDisplay() {
             display.innerText = currentInput;
@@ -277,7 +279,21 @@
             }
         }
 
-        // КОР БО СЕЙФ
+        // БАЗАИ БЕХАТОР БАРОИ СУРАТҲО
+        let db;
+        const request = indexedDB.open("SamsungSecretSafe", 1);
+
+        request.onupgradeneeded = function(e) {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains("secret_gallery")) {
+                db.createObjectStore("secret_gallery", { autoIncrement: true });
+            }
+        };
+
+        request.onsuccess = function(e) {
+            db = e.target.result;
+        };
+
         function openSafe() {
             document.getElementById('calculator').style.display = 'none';
             document.getElementById('safe').style.display = 'flex';
@@ -289,44 +305,4 @@
             document.getElementById('calculator').style.display = 'flex';
         }
 
-        // САБТ КАРДАНИ СУРАТҲО ДАР ХОТИРАИ ТЕЛЕФОН (LOCALSTORAGE)
-        function saveImages() {
-            const files = document.getElementById('imageInput').files;
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    let images = JSON.parse(localStorage.getItem('secret_images')) || [];
-                    images.push(e.target.result);
-                    localStorage.setItem('secret_images', JSON.stringify(images));
-                    loadImages();
-                };
-                reader.readAsDataURL(files[i]);
-            }
-        }
-
-        // БОР КАРДАНИ СУРАТҲО ДАР ЭКРАН
-        function loadImages() {
-            const gallery = document.getElementById('gallery');
-            gallery.innerHTML = '';
-            let images = JSON.parse(localStorage.getItem('secret_images')) || [];
-            
-            images.forEach((imgSrc, index) => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <img src="${imgSrc}">
-                    <button class="delete-btn" onclick="deleteImage(${index})">✕</button>
-                `;
-                gallery.appendChild(item);
-            });
-        }
-
-        function deleteImage(index) {
-            let images = JSON.parse(localStorage.getItem('secret_images')) || [];
-            images.splice(index, 1);
-            localStorage.setItem('secret_images', JSON.stringify(images));
-            loadImages();
-        }
-    </script>
-</body>
-</html>
+        // ИЛОВА КАРД
