@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ёддоштҳои Мукаммал</title>
+    <style>
+        /* 1. НАСТРОЙКАИ ЭКРАН ВА ФОН (Стили сиёҳи касбӣ) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 90vh;
+            background: #1c1c1e; /* Ранги хокистарии торики iOS */
+            border-radius: 30px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 2. ШАВҚАТИ БОЛОИ БАРНОМА (Шапка) */
+        .header {
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a84ff; /* Ранги кабуди дурахшони Apple */
+        }
+        .header p {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-top: 5px;
+        }
+
+        /* 3. КУТТИИ НАВИШТАН ВА ТУГМАИ ИЛОВА (Input) */
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .task-input {
+            flex-grow: 1;
+            background: #2c2c2e;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+        }
+        .task-input::placeholder {
+            color: #aeaeb2;
+        }
+        .add-btn {
+            background: #0a84ff;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .add-btn:active {
+            background: #0056b3;
+        }
+
+        /* 4. РӮЙХАТИ КОРҲО (Дизайни элементҳо) */
+        .task-list {
+            list-style: none;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        /* Шаблони як дона кор дар рӯйхат (соф барои намуна) */
+        .task-item {
+            background: rgba(255, 255, 255, 0.05); /* Стили шишагӣ */
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .task-text {
+            font-size: 16px;
+            color: #ffffff;
+        }
+        .delete-task-btn {
+            background: #ff453a; /* Ранги сурхи хавфноки iOS */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>📝 Рӯйхати Корҳо</h1>
+            <p>Барои имрӯз чӣ нақша доред, Бародар?</p>
+        </div>
+
+        <div class="input-section">
+            <input type="text" class="task-input" placeholder="Кори навро нависед...">
+            <button class="add-btn">➕</button>
+        </div>
+
+        <ul class="task-list">
+            <div class="task-item">
+                <span class="task-text">Намуна: Омӯхтани Дизайни Figma 🎨</span>
+                <button class="delete-task-btn">✕ Нест кардан</button>
+            </div>
+        </ul>
+    </div>
+
+</body>
+</html>
